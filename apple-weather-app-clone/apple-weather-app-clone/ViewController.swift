@@ -20,7 +20,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
+        self.navigationItem.title = "날씨"
+        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        self.navigationController?.navigationBar.prefersLargeTitles = true
     }
     
 }
-
