@@ -8,12 +8,19 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
+    private lazy var rightBarButtonItem: UIBarButtonItem = {
+        var button = UIBarButtonItem()
+        button.isHidden = false
+        button.image = UIImage(named: "ellipsis_image")
+        button.tintColor = .white
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        self.navigationItem.rightBarButtonItem = rightBarButtonItem
     }
-
-
+    
 }
 
