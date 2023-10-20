@@ -36,6 +36,14 @@ class ViewController: UIViewController {
     
     private var contentView = UIView()
     
+    private var weatherInfoStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 20
+        return stackView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
@@ -75,8 +83,30 @@ extension ViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
         ])
+        
+        [weatherInfoStackView].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview($0)
+        }
+        
+        NSLayoutConstraint.activate([
+            weatherInfoStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 7),
+            weatherInfoStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            weatherInfoStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            weatherInfoStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        ])
+        
+        let seoulWeatherInfoView = WeatherInfoView(location: "서울", weather: "흐림", temperature: "25°", maxTemperature: "27°", minTemperature: "23°")
+        let bundangWeatherInfoView = WeatherInfoView(location: "분당구", weather: "맑음", temperature: "25°", maxTemperature: "27°", minTemperature: "24°")
+        let newyorkWeatherInfoView = WeatherInfoView(location: "뉴욕", weather: "맑음", temperature: "23°", maxTemperature: "25°", minTemperature: "21°")
+        
+        [seoulWeatherInfoView, bundangWeatherInfoView, newyorkWeatherInfoView].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            ($0.heightAnchor.constraint(equalToConstant: 120)).isActive = true
+            weatherInfoStackView.addArrangedSubview($0)
+        }
     }
     
     private func setSearchController() {
