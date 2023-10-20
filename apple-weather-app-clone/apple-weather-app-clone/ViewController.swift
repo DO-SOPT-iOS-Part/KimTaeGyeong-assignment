@@ -105,6 +105,7 @@ extension ViewController {
         [seoulWeatherInfoView, bundangWeatherInfoView, newyorkWeatherInfoView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             ($0.heightAnchor.constraint(equalToConstant: 120)).isActive = true
+            $0.delegate = self
             weatherInfoStackView.addArrangedSubview($0)
         }
     }
@@ -114,6 +115,16 @@ extension ViewController {
         self.navigationItem.hidesSearchBarWhenScrolling = false
         self.locationSearchController.searchBar.searchTextField.textColor = .white
         self.locationSearchController.searchBar.searchTextField.leftView?.tintColor = #colorLiteral(red: 0.6178889275, green: 0.6178889275, blue: 0.6178889275, alpha: 1)
+    }
+    
+}
+
+extension ViewController: WeatherInfoViewDelegate {
+    
+    func weatherInfoViewDidTap(_ weatherInfoView: WeatherInfoView) {
+        let weatherDetailedInfoVC = WeatherDetailedInfoVC()
+        self.navigationController?.pushViewController(weatherDetailedInfoVC, animated: true)
+        self.navigationController?.isNavigationBarHidden = true
     }
     
 }

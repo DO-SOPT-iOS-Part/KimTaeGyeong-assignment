@@ -9,6 +9,8 @@ import UIKit
 
 class WeatherInfoView: UIView {
     
+    weak var delegate: WeatherInfoViewDelegate?
+    
     private let backgroundImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "background_image2"))
         imageView.contentMode = .scaleAspectFill
@@ -124,7 +126,7 @@ class WeatherInfoView: UIView {
     }
     
     @objc private func handleTap(_ sender: UITapGestureRecognizer) {
-        print("\(locationLabel.text ?? "") 날씨 정보")
+        delegate?.weatherInfoViewDidTap(self)
     }
     
 }
