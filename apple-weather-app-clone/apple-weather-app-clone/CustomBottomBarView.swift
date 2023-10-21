@@ -40,6 +40,7 @@ class CustomBottomBarView: UIView {
     
     init() {
         super.init(frame: .zero)
+        self.backgroundColor = UIColor.black.withAlphaComponent(0.1)
         
         self.setLayout()
     }

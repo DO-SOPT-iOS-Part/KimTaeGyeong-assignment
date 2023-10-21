@@ -31,6 +31,7 @@ class ViewController: UIViewController {
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.alwaysBounceVertical = true
+        scrollView.showsVerticalScrollIndicator = false
         return scrollView
     }()
     
@@ -72,7 +73,7 @@ extension ViewController {
             scrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
         ])
         
         scrollView.addSubview(contentView)
@@ -83,7 +84,7 @@ extension ViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
         
         [weatherInfoStackView].forEach {
@@ -93,9 +94,9 @@ extension ViewController {
         
         NSLayoutConstraint.activate([
             weatherInfoStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 7),
+            weatherInfoStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             weatherInfoStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            weatherInfoStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            weatherInfoStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            weatherInfoStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
         
         let seoulWeatherInfoView = WeatherInfoView(location: "서울", weather: "흐림", temperature: "25°", maxTemperature: "27°", minTemperature: "23°")
