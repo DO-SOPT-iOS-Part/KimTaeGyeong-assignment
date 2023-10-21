@@ -130,7 +130,7 @@ extension ViewController: WeatherInfoViewDelegate {
             return
         }
         
-        let weatherDetailedInfoVC = WeatherDetailedInfoVC(location: location, weather: weather, temperature: temperature, maxTemperature: maxTemperature, minTemperature: minTemperature)
+        let weatherDetailedInfoVC = WeatherDetailedInfoVC(location: location, temperature: temperature, weather: weather, maxTemperature: maxTemperature, minTemperature: minTemperature)
         
         self.navigationController?.pushViewController(weatherDetailedInfoVC, animated: true)
         self.navigationController?.isNavigationBarHidden = true
