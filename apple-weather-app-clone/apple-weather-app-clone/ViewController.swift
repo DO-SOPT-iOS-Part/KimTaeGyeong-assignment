@@ -45,6 +45,10 @@ class ViewController: UIViewController {
         return stackView
     }()
     
+    let seoulWeatherInfoView = WeatherInfoView(location: "서울", weather: "흐림", temperature: "25°", maxTemperature: "27°", minTemperature: "23°")
+    let bundangWeatherInfoView = WeatherInfoView(location: "분당구", weather: "맑음", temperature: "25°", maxTemperature: "27°", minTemperature: "24°")
+    let newyorkWeatherInfoView = WeatherInfoView(location: "뉴욕", weather: "맑음", temperature: "23°", maxTemperature: "25°", minTemperature: "21°")
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
@@ -98,10 +102,6 @@ extension ViewController {
             weatherInfoStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             weatherInfoStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
-        
-        let seoulWeatherInfoView = WeatherInfoView(location: "서울", weather: "흐림", temperature: "25°", maxTemperature: "27°", minTemperature: "23°")
-        let bundangWeatherInfoView = WeatherInfoView(location: "분당구", weather: "맑음", temperature: "25°", maxTemperature: "27°", minTemperature: "24°")
-        let newyorkWeatherInfoView = WeatherInfoView(location: "뉴욕", weather: "맑음", temperature: "23°", maxTemperature: "25°", minTemperature: "21°")
         
         [seoulWeatherInfoView, bundangWeatherInfoView, newyorkWeatherInfoView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
