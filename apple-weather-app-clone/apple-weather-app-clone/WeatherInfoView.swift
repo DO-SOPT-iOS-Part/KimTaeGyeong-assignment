@@ -11,13 +11,13 @@ class WeatherInfoView: UIView {
     
     weak var delegate: WeatherInfoViewDelegate?
     
-    private let backgroundImageView: UIImageView = {
+    let backgroundImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "background_image2"))
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     
-    private let myLocationLabel: UILabel = {
+    let myLocationLabel: UILabel = {
         let label = UILabel()
         label.text = "나의 위치"
         label.textColor = .white
@@ -25,35 +25,35 @@ class WeatherInfoView: UIView {
         return label
     }()
     
-    private let locationLabel: UILabel = {
+    let locationLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
         label.font = UIFont(name: "SFProDisplay-Medium", size: 16)
         return label
     }()
     
-    private let weatherLabel: UILabel = {
+    let weatherLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
         label.font = UIFont(name: "SFProDisplay-Regular", size: 15)
         return label
     }()
     
-    private let temperatureLabel: UILabel = {
+    let temperatureLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
         label.font = UIFont(name: "SFProDisplay-Light", size: 50)
         return label
     }()
     
-    private let maxtemperatureLabel: UILabel = {
+    let maxtemperatureLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
         label.font = UIFont(name: "SFProDisplay-Medium", size: 15)
         return label
     }()
     
-    private let mintemperatureLabel: UILabel = {
+    let mintemperatureLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
         label.font = UIFont(name: "SFProDisplay-Medium", size: 15)
@@ -126,7 +126,7 @@ class WeatherInfoView: UIView {
     }
     
     @objc private func handleTap(_ sender: UITapGestureRecognizer) {
-        delegate?.weatherInfoViewDidTap(self)
+        delegate?.weatherInfoViewTapped(self)
     }
     
 }

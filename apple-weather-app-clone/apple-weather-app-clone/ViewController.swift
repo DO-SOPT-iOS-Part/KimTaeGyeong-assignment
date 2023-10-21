@@ -70,9 +70,9 @@ extension ViewController {
         
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
         
         scrollView.addSubview(contentView)
@@ -121,8 +121,17 @@ extension ViewController {
 
 extension ViewController: WeatherInfoViewDelegate {
     
-    func weatherInfoViewDidTap(_ weatherInfoView: WeatherInfoView) {
-        let weatherDetailedInfoVC = WeatherDetailedInfoVC()
+    func weatherInfoViewTapped(_ weatherInfoView: WeatherInfoView) {
+        guard let location = weatherInfoView.locationLabel.text,
+              let weather = weatherInfoView.weatherLabel.text,
+              let temperature = weatherInfoView.temperatureLabel.text,
+              let maxTemperature = weatherInfoView.maxtemperatureLabel.text,
+              let minTemperature = weatherInfoView.mintemperatureLabel.text else {
+            return
+        }
+        
+        let weatherDetailedInfoVC = WeatherDetailedInfoVC(location: location, weather: weather, temperature: temperature, maxTemperature: maxTemperature, minTemperature: minTemperature)
+        
         self.navigationController?.pushViewController(weatherDetailedInfoVC, animated: true)
         self.navigationController?.isNavigationBarHidden = true
     }
