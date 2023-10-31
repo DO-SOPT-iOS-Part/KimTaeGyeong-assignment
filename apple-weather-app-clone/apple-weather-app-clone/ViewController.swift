@@ -65,6 +65,12 @@ class ViewController: UIViewController {
         self.setSearchController()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = false
+        self.navigationItem.searchController?.searchBar.isHidden = false
+    }
+    
 }
 
 extension ViewController {
@@ -116,6 +122,7 @@ extension ViewController {
         self.navigationItem.hidesSearchBarWhenScrolling = false
         self.locationSearchController.searchBar.searchTextField.textColor = .white
         self.locationSearchController.searchBar.searchTextField.leftView?.tintColor = #colorLiteral(red: 0.6178889275, green: 0.6178889275, blue: 0.6178889275, alpha: 1)
+        self.locationSearchController.searchResultsUpdater = self
     }
     
 }
@@ -132,9 +139,33 @@ extension ViewController: WeatherInfoViewDelegate {
         }
         
         let weatherDetailedInfoVC = WeatherDetailedInfoVC(location: location, temperature: temperature, weather: weather, maxTemperature: maxTemperature, minTemperature: minTemperature)
-        
+        //        self.navigationController?.isNavigationBarHidden = true
         self.navigationController?.pushViewController(weatherDetailedInfoVC, animated: true)
-        self.navigationController?.isNavigationBarHidden = true
+    }
+    
+}
+
+extension ViewController: UISearchResultsUpdating {
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() else {
+            return
+        }
+        
+        weatherInfoStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        if searchText.isEmpty {
+            for weatherInfoView in [seoulWeatherInfoView, bundangWeatherInfoView, newyorkWeatherInfoView] {
+                weatherInfoStackView.addArrangedSubview(weatherInfoView)
+            }
+        } else {
+            for weatherInfoView in [seoulWeatherInfoView, bundangWeatherInfoView, newyorkWeatherInfoView] {
+                let location = weatherInfoView.locationLabel.text!.lowercased()
+                if location.contains(searchText) {
+                    weatherInfoStackView.addArrangedSubview(weatherInfoView)
+                }
+            }
+        }
     }
     
 }

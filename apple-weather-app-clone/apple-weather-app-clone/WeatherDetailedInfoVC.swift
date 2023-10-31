@@ -123,8 +123,8 @@ class WeatherDetailedInfoVC: UIViewController {
         super.viewDidLoad()
         self.setBackgroundImage()
         self.setLayout()
-        
         customBottomBar.delegate = self
+        self.navigationController?.navigationBar.isHidden = true
     }
     
 }
