@@ -45,9 +45,7 @@ class ViewController: UIViewController {
         return stackView
     }()
     
-    let seoulWeatherInfoView = WeatherInfoView(location: "서울", weather: "흐림", temperature: "25°", maxTemperature: "27°", minTemperature: "23°")
-    let bundangWeatherInfoView = WeatherInfoView(location: "분당구", weather: "맑음", temperature: "25°", maxTemperature: "27°", minTemperature: "24°")
-    let newyorkWeatherInfoView = WeatherInfoView(location: "뉴욕", weather: "맑음", temperature: "23°", maxTemperature: "25°", minTemperature: "21°")
+    var weatherInfoViewList = [WeatherInfoView(location: "서울", weather: "흐림", temperature: "25°", maxTemperature: "27°", minTemperature: "23°"), WeatherInfoView(location: "분당구", weather: "맑음", temperature: "25°", maxTemperature: "27°", minTemperature: "24°"), WeatherInfoView(location: "뉴욕", weather: "맑음", temperature: "23°", maxTemperature: "25°", minTemperature: "21°")]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -109,7 +107,7 @@ extension ViewController {
             weatherInfoStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
         
-        [seoulWeatherInfoView, bundangWeatherInfoView, newyorkWeatherInfoView].forEach {
+        weatherInfoViewList.forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             ($0.heightAnchor.constraint(equalToConstant: 120)).isActive = true
             $0.delegate = self
@@ -130,17 +128,9 @@ extension ViewController {
 extension ViewController: WeatherInfoViewDelegate {
     
     func weatherInfoViewTapped(_ weatherInfoView: WeatherInfoView) {
-        guard let location = weatherInfoView.locationLabel.text,
-              let weather = weatherInfoView.weatherLabel.text,
-              let temperature = weatherInfoView.temperatureLabel.text,
-              let maxTemperature = weatherInfoView.maxtemperatureLabel.text,
-              let minTemperature = weatherInfoView.mintemperatureLabel.text else {
-            return
-        }
-        
-        let weatherDetailedInfoVC = WeatherDetailedInfoVC(location: location, temperature: temperature, weather: weather, maxTemperature: maxTemperature, minTemperature: minTemperature)
-        //        self.navigationController?.isNavigationBarHidden = true
-        self.navigationController?.pushViewController(weatherDetailedInfoVC, animated: true)
+        let weatherDetailedInfoPageVC = WeatherDetailedInfoPageVC(weatherInfoViewList: weatherInfoViewList)
+        weatherDetailedInfoPageVC.initialPage = weatherInfoViewList.firstIndex(of: weatherInfoView)!
+        self.navigationController?.pushViewController(weatherDetailedInfoPageVC, animated: true)
     }
     
 }
@@ -155,11 +145,11 @@ extension ViewController: UISearchResultsUpdating {
         weatherInfoStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
         if searchText.isEmpty {
-            for weatherInfoView in [seoulWeatherInfoView, bundangWeatherInfoView, newyorkWeatherInfoView] {
+            for weatherInfoView in weatherInfoViewList {
                 weatherInfoStackView.addArrangedSubview(weatherInfoView)
             }
         } else {
-            for weatherInfoView in [seoulWeatherInfoView, bundangWeatherInfoView, newyorkWeatherInfoView] {
+            for weatherInfoView in weatherInfoViewList {
                 let location = weatherInfoView.locationLabel.text!.lowercased()
                 if location.contains(searchText) {
                     weatherInfoStackView.addArrangedSubview(weatherInfoView)

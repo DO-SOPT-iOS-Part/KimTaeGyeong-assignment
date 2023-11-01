@@ -9,8 +9,6 @@ import UIKit
 
 class WeatherDetailedInfoVC: UIViewController {
     
-    private let customBottomBar = CustomBottomBarView()
-    
     private let verticalScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.alwaysBounceVertical = true
@@ -123,7 +121,6 @@ class WeatherDetailedInfoVC: UIViewController {
         super.viewDidLoad()
         self.setBackgroundImage()
         self.setLayout()
-        customBottomBar.delegate = self
         self.navigationController?.navigationBar.isHidden = true
     }
     
@@ -132,21 +129,14 @@ class WeatherDetailedInfoVC: UIViewController {
 extension WeatherDetailedInfoVC {
     
     private func setLayout() {
-        [customBottomBar,verticalScrollView].forEach {
+        [verticalScrollView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             self.view.addSubview($0)
         }
         
         NSLayoutConstraint.activate([
-            customBottomBar.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-            customBottomBar.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            customBottomBar.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            customBottomBar.heightAnchor.constraint(equalToConstant: 80)
-        ])
-        
-        NSLayoutConstraint.activate([
             verticalScrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            verticalScrollView.bottomAnchor.constraint(equalTo: customBottomBar.topAnchor),
+            verticalScrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
             verticalScrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             verticalScrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
         ])
@@ -248,15 +238,6 @@ extension WeatherDetailedInfoVC {
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.frame = view.bounds
         view.insertSubview(backgroundImageView, at: 0)
-    }
-    
-}
-
-extension WeatherDetailedInfoVC: CustomBottomBarViewDelegate {
-    
-    func listButtonPressed(_ customBottomBarView: CustomBottomBarView) {
-        self.navigationController?.isNavigationBarHidden = false
-        self.navigationController?.popViewController(animated: true)
     }
     
 }
