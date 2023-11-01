@@ -7,68 +7,25 @@
 
 import UIKit
 
+import SnapKit
+import Then
+
 class WeatherInfoView: UIView {
     
     weak var delegate: WeatherInfoViewDelegate?
     
-    let backgroundImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "background_image2"))
-        imageView.contentMode = .scaleAspectFill
-        return imageView
-    }()
-    
-    let myLocationLabel: UILabel = {
-        let label = UILabel()
-        label.text = "나의 위치"
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Bold", size: 25)
-        return label
-    }()
-    
-    let locationLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Medium", size: 16)
-        return label
-    }()
-    
-    let weatherLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 15)
-        return label
-    }()
-    
-    let temperatureLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Light", size: 50)
-        return label
-    }()
-    
-    let maxtemperatureLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Medium", size: 15)
-        return label
-    }()
-    
-    let mintemperatureLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Medium", size: 15)
-        return label
-    }()
+    let backgroundImageView = UIImageView(image: UIImage(named: "background_image2"))
+    let myLocationLabel = UILabel()
+    let locationLabel = UILabel()
+    let weatherLabel = UILabel()
+    let temperatureLabel = UILabel()
+    let maxtemperatureLabel = UILabel()
+    let mintemperatureLabel = UILabel()
     
     init(location: String, weather: String, temperature: String, maxTemperature: String, minTemperature: String) {
         super.init(frame: .zero)
-        locationLabel.text = location
-        weatherLabel.text = weather
-        temperatureLabel.text = temperature
-        maxtemperatureLabel.text = "최고:\(maxTemperature)"
-        mintemperatureLabel.text = "최저:\(minTemperature)"
-        
-        self.setLayout()
+        self.bindData(location: location, weather: weather, temperature: temperature, maxTemperature: maxTemperature, minTemperature: minTemperature)
+        self.setUI()
         self.setupGestureRecognizers()
     }
     
@@ -76,48 +33,98 @@ class WeatherInfoView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+}
+
+extension WeatherInfoView {
+    
+    private func setUI() {
+        setStyle()
+        setLayout()
+    }
+    
+    private func setStyle() {
+        backgroundImageView.do {
+            $0.contentMode = .scaleAspectFill
+        }
+        
+        myLocationLabel.do {
+            $0.text = "나의 위치"
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Bold", size: 25)
+        }
+        
+        locationLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Medium", size: 16)
+        }
+        
+        weatherLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Regular", size: 15)
+        }
+        
+        temperatureLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Light", size: 50)
+        }
+        
+        maxtemperatureLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Medium", size: 15)
+        }
+        
+        mintemperatureLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Medium", size: 15)
+        }
+    }
+    
     private func setLayout() {
         [backgroundImageView, myLocationLabel, locationLabel, weatherLabel, temperatureLabel, maxtemperatureLabel, mintemperatureLabel].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
             addSubview($0)
         }
         
-        NSLayoutConstraint.activate([
-            backgroundImageView.topAnchor.constraint(equalTo: topAnchor),
-            backgroundImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            backgroundImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            backgroundImageView.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
+        backgroundImageView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
         
-        NSLayoutConstraint.activate([
-            myLocationLabel.topAnchor.constraint(equalTo: topAnchor, constant: 7),
-            myLocationLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15)
-        ])
+        myLocationLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(7)
+            $0.leading.equalToSuperview().inset(15)
+        }
         
-        NSLayoutConstraint.activate([
-            locationLabel.topAnchor.constraint(equalTo: myLocationLabel.bottomAnchor),
-            locationLabel.leadingAnchor.constraint(equalTo: myLocationLabel.leadingAnchor)
-        ])
+        locationLabel.snp.makeConstraints {
+            $0.top.equalTo(myLocationLabel.snp.bottom)
+            $0.leading.equalTo(myLocationLabel.snp.leading)
+        }
         
-        NSLayoutConstraint.activate([
-            weatherLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -7),
-            weatherLabel.leadingAnchor.constraint(equalTo: myLocationLabel.leadingAnchor)
-        ])
+        weatherLabel.snp.makeConstraints {
+            $0.bottom.equalToSuperview().inset(7)
+            $0.leading.equalTo(myLocationLabel)
+        }
         
-        NSLayoutConstraint.activate([
-            temperatureLabel.topAnchor.constraint(equalTo: myLocationLabel.topAnchor),
-            temperatureLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15)
-        ])
+        temperatureLabel.snp.makeConstraints {
+            $0.top.equalTo(myLocationLabel)
+            $0.trailing.equalToSuperview().inset(15)
+        }
         
-        NSLayoutConstraint.activate([
-            mintemperatureLabel.bottomAnchor.constraint(equalTo: weatherLabel.bottomAnchor),
-            mintemperatureLabel.trailingAnchor.constraint(equalTo: temperatureLabel.trailingAnchor)
-        ])
+        mintemperatureLabel.snp.makeConstraints {
+            $0.bottom.equalTo(weatherLabel)
+            $0.trailing.equalTo(temperatureLabel)
+        }
         
-        NSLayoutConstraint.activate([
-            maxtemperatureLabel.bottomAnchor.constraint(equalTo: weatherLabel.bottomAnchor),
-            maxtemperatureLabel.trailingAnchor.constraint(equalTo: mintemperatureLabel.leadingAnchor, constant: -5)
-        ])
+        maxtemperatureLabel.snp.makeConstraints {
+            $0.bottom.equalTo(weatherLabel)
+            $0.trailing.equalTo(mintemperatureLabel.snp.leading).offset(-5)
+        }
+    }
+    
+    private func bindData(location: String, weather: String, temperature: String, maxTemperature: String, minTemperature: String) {
+        locationLabel.text = location
+        weatherLabel.text = weather
+        temperatureLabel.text = temperature
+        maxtemperatureLabel.text = "최고:\(maxTemperature)"
+        mintemperatureLabel.text = "최저:\(minTemperature)"
     }
     
     private func setupGestureRecognizers() {

@@ -7,60 +7,33 @@
 
 import UIKit
 
+import SnapKit
+import Then
+
 class TimelyWeatherView: UIView {
     
-    private let timeLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 17)
-        return label
-    }()
-    
-    private let weatherImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-    
-    private let temperatureLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Medium", size: 19)
-        return label
-    }()
+    private let timeLabel = UILabel()
+    private let weatherImageView = UIImageView()
+    private let temperatureLabel = UILabel()
     
     init(time: String, weather: String, temperature: String) {
         super.init(frame: .zero)
-        timeLabel.text = "\(time)시"
-        setWeatherImage(weather: weather)
-        temperatureLabel.text = "\(temperature)"
-        setLayout()
+        self.bindData(time: time, weather: weather, temperature: temperature)
+        self.setUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setLayout() {
-        [timeLabel, weatherImageView, temperatureLabel].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            addSubview($0)
-        }
-        
-        NSLayoutConstraint.activate([
-            timeLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            timeLabel.centerXAnchor.constraint(equalTo: centerXAnchor)
-        ])
-        
-        NSLayoutConstraint.activate([
-            weatherImageView.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 10),
-            weatherImageView.centerXAnchor.constraint(equalTo: timeLabel.centerXAnchor)
-        ])
-        
-        NSLayoutConstraint.activate([
-            temperatureLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
-            temperatureLabel.centerXAnchor.constraint(equalTo: timeLabel.centerXAnchor)
-        ])
+}
+
+extension TimelyWeatherView {
+    
+    private func bindData(time: String, weather: String, temperature: String) {
+        timeLabel.text = "\(time)시"
+        setWeatherImage(weather: weather)
+        temperatureLabel.text = "\(temperature)"
     }
     
     private func setWeatherImage(weather: String) {
@@ -79,4 +52,47 @@ class TimelyWeatherView: UIView {
             weatherImageView.image = UIImage(named: "cloudy_image")
         }
     }
+    
+    private func setUI() {
+        setStyle()
+        setLayout()
+    }
+    
+    private func setStyle() {
+        timeLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Regular", size: 17)
+        }
+        
+        weatherImageView.do {
+            $0.contentMode = .scaleAspectFit
+        }
+        
+        temperatureLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Medium", size: 19)
+        }
+    }
+    
+    private func setLayout() {
+        [timeLabel, weatherImageView, temperatureLabel].forEach {
+            addSubview($0)
+        }
+        
+        timeLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(10)
+            $0.centerX.equalToSuperview()
+        }
+        
+        weatherImageView.snp.makeConstraints {
+            $0.top.equalTo(timeLabel.snp.bottom).offset(10)
+            $0.centerX.equalTo(timeLabel)
+        }
+        
+        temperatureLabel.snp.makeConstraints {
+            $0.bottom.equalToSuperview().inset(10)
+            $0.centerX.equalTo(timeLabel)
+        }
+    }
+    
 }

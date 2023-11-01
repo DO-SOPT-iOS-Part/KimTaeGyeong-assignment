@@ -7,59 +7,24 @@
 
 import UIKit
 
+import SnapKit
+import Then
+
 class ViewController: UIViewController {
     
-    private lazy var rightBarButtonItem: UIBarButtonItem = {
-        var button = UIBarButtonItem()
-        button.isHidden = false
-        button.image = UIImage(named: "ellipsis_image")
-        button.tintColor = .white
-        return button
-    }()
-    
-    private let locationSearchController: UISearchController = {
-        let searchController = UISearchController()
-        searchController.searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "도시 또는 공항 검색", attributes: [NSAttributedString.Key.foregroundColor : #colorLiteral(red: 0.6178889275, green: 0.6178889275, blue: 0.6178889275, alpha: 1)])
-        searchController.searchBar.searchTextField.backgroundColor = #colorLiteral(red: 0.1353607476, green: 0.1353607476, blue: 0.1353607476, alpha: 1)
-        searchController.searchBar.searchTextField.textColor = .white
-        searchController.searchBar.tintColor = .white
-        searchController.searchBar.setValue("취소", forKey: "cancelButtonText")
-        searchController.hidesNavigationBarDuringPresentation = true
-        return searchController
-    }()
-    
-    private let scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.alwaysBounceVertical = true
-        scrollView.showsVerticalScrollIndicator = false
-        return scrollView
-    }()
-    
-    private var contentView = UIView()
-    
-    private var weatherInfoStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 20
-        return stackView
-    }()
-    
     var weatherInfoViewList = [WeatherInfoView(location: "서울", weather: "흐림", temperature: "25°", maxTemperature: "27°", minTemperature: "23°"), WeatherInfoView(location: "분당구", weather: "맑음", temperature: "25°", maxTemperature: "27°", minTemperature: "24°"), WeatherInfoView(location: "뉴욕", weather: "맑음", temperature: "23°", maxTemperature: "25°", minTemperature: "21°")]
+    
+    private lazy var rightBarButtonItem = UIBarButtonItem()
+    private let locationSearchController = UISearchController()
+    private let scrollView = UIScrollView()
+    private var contentView = UIView()
+    private var weatherInfoStackView = UIStackView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
-        
-        self.navigationItem.rightBarButtonItem = rightBarButtonItem
-        self.navigationItem.title = "날씨"
-        
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-        self.navigationController?.navigationBar.barTintColor = .black
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        
-        self.setLayout()
+        self.setNavigation()
+        self.setUI()
         self.setSearchController()
     }
     
@@ -73,46 +38,78 @@ class ViewController: UIViewController {
 
 extension ViewController {
     
+    private func setUI() {
+        setStyle()
+        setLayout()
+    }
+    
+    private func setStyle() {
+        rightBarButtonItem.do {
+            $0.isHidden = false
+            $0.image = UIImage(named: "ellipsis_image")
+            $0.tintColor = .white
+        }
+        
+        locationSearchController.do {
+            $0.searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "도시 또는 공항 검색", attributes: [NSAttributedString.Key.foregroundColor : #colorLiteral(red: 0.6178889275, green: 0.6178889275, blue: 0.6178889275, alpha: 1)])
+            $0.searchBar.searchTextField.backgroundColor = #colorLiteral(red: 0.1353607476, green: 0.1353607476, blue: 0.1353607476, alpha: 1)
+            $0.searchBar.searchTextField.textColor = .white
+            $0.searchBar.tintColor = .white
+            $0.searchBar.setValue("취소", forKey: "cancelButtonText")
+            $0.hidesNavigationBarDuringPresentation = true
+        }
+        
+        scrollView.do {
+            $0.alwaysBounceVertical = true
+            $0.showsVerticalScrollIndicator = false
+        }
+        
+        weatherInfoStackView.do {
+            $0.axis = .vertical
+            $0.distribution = .equalSpacing
+            $0.spacing = 20
+        }
+    }
+    
     private func setLayout() {
         self.view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
-        ])
+        scrollView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
         
         scrollView.addSubview(contentView)
-        contentView.translatesAutoresizingMaskIntoConstraints = false
         
-        NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-        ])
-        
-        [weatherInfoStackView].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addSubview($0)
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView)
+            $0.width.equalTo(scrollView.snp.width)
         }
         
-        NSLayoutConstraint.activate([
-            weatherInfoStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 7),
-            weatherInfoStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            weatherInfoStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            weatherInfoStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
-        ])
+        contentView.addSubview(weatherInfoStackView)
         
-        weatherInfoViewList.forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            ($0.heightAnchor.constraint(equalToConstant: 120)).isActive = true
-            $0.delegate = self
-            weatherInfoStackView.addArrangedSubview($0)
+        weatherInfoStackView.snp.makeConstraints {
+            $0.top.equalTo(contentView.snp.top).inset(7)
+            $0.bottom.equalTo(contentView.snp.bottom)
+            $0.leading.trailing.equalTo(contentView).inset(16)
         }
+        
+        weatherInfoViewList.forEach { view in
+            view.delegate = self
+            weatherInfoStackView.addArrangedSubview(view)
+            view.snp.makeConstraints {
+                $0.height.equalTo(120)
+            }
+        }
+        
+    }
+    
+    private func setNavigation() {
+        self.navigationItem.rightBarButtonItem = rightBarButtonItem
+        self.navigationItem.title = "날씨"
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        self.navigationController?.navigationBar.barTintColor = .black
+        self.navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     private func setSearchController() {
@@ -141,9 +138,7 @@ extension ViewController: UISearchResultsUpdating {
         guard let searchText = searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() else {
             return
         }
-        
         weatherInfoStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
         if searchText.isEmpty {
             for weatherInfoView in weatherInfoViewList {
                 weatherInfoStackView.addArrangedSubview(weatherInfoView)

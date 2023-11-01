@@ -7,102 +7,26 @@
 
 import UIKit
 
+import SnapKit
+import Then
+
 class WeatherDetailedInfoVC: UIViewController {
     
-    private let verticalScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.alwaysBounceVertical = true
-        scrollView.showsVerticalScrollIndicator = false
-        return scrollView
-    }()
-    
+    private let verticalScrollView = UIScrollView()
     private var contentView = UIView()
-    
-    private let locationLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 45)
-        return label
-    }()
-    
-    private let temperatureLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Light", size: 75)
-        return label
-    }()
-    
-    private let weatherLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 25)
-        return label
-    }()
-    
-    private let maxtemperatureLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 23)
-        return label
-    }()
-    
-    private let mintemperatureLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 23)
-        return label
-    }()
-    
-    private let descriptionView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.2)
-        view.layer.cornerRadius = 20
-        return view
-    }()
-    
-    private let descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "08:00~09:00에 강우 상태가, 18:00에 한때 흐린 상태가 예상됩니다."
-        label.numberOfLines = 0
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 17)
-        return label
-    }()
-    
-    private let lineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.white.withAlphaComponent(0.3)
-        return view
-    }()
-    
-    private let horizontalScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.showsHorizontalScrollIndicator = false
-        return scrollView
-    }()
-    
+    private let locationLabel: UILabel = UILabel()
+    private let temperatureLabel = UILabel()
+    private let weatherLabel = UILabel()
+    private let maxtemperatureLabel = UILabel()
+    private let mintemperatureLabel = UILabel()
+    private let descriptionView = UIView()
+    private let descriptionLabel = UILabel()
+    private let lineView = UIView()
+    private let horizontalScrollView = UIScrollView()
     private var timelyWeatherContentView = UIView()
+    private var timelyWeatherStackView = UIStackView()
     
-    private var timelyWeatherStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 10
-        return stackView
-    }()
-    
-    let timelyWeatherInfoView1 = TimelyWeatherView(time: "1", weather: "cloudy", temperature: "25°")
-    let timelyWeatherInfoView2 = TimelyWeatherView(time: "2", weather: "heavy rain", temperature: "24°")
-    let timelyWeatherInfoView3 = TimelyWeatherView(time: "3", weather: "party cloudy", temperature: "23°")
-    let timelyWeatherInfoView4 = TimelyWeatherView(time: "4", weather: "rain", temperature: "22°")
-    let timelyWeatherInfoView5 = TimelyWeatherView(time: "5", weather: "thunderstorms", temperature: "21°")
-    let timelyWeatherInfoView6 = TimelyWeatherView(time: "6", weather: "rain", temperature: "20°")
-    let timelyWeatherInfoView7 = TimelyWeatherView(time: "7", weather: "party cloudy", temperature: "20°")
-    let timelyWeatherInfoView8 = TimelyWeatherView(time: "8", weather: "heavy rain", temperature: "21°")
-    let timelyWeatherInfoView9 = TimelyWeatherView(time: "9", weather: "cloudy", temperature: "22°")
-    let timelyWeatherInfoView10 = TimelyWeatherView(time: "10", weather: "cloudy", temperature: "23°")
-    let timelyWeatherInfoView11 = TimelyWeatherView(time: "11", weather: "cloudy", temperature: "24°")
-    let timelyWeatherInfoView12 = TimelyWeatherView(time: "12", weather: "cloudy", temperature: "25°")
+    var timelyWeatherInfoViewList = [TimelyWeatherView(time: "1", weather: "cloudy", temperature: "25°"), TimelyWeatherView(time: "2", weather: "heavy rain", temperature: "24°"), TimelyWeatherView(time: "3", weather: "party cloudy", temperature: "23°"), TimelyWeatherView(time: "4", weather: "rain", temperature: "22°"), TimelyWeatherView(time: "5", weather: "thunderstorms", temperature: "21°"), TimelyWeatherView(time: "6", weather: "rain", temperature: "20°"), TimelyWeatherView(time: "7", weather: "party cloudy", temperature: "20°"), TimelyWeatherView(time: "8", weather: "heavy rain", temperature: "21°"), TimelyWeatherView(time: "9", weather: "cloudy", temperature: "22°"), TimelyWeatherView(time: "10", weather: "cloudy", temperature: "23°"), TimelyWeatherView(time: "11", weather: "cloudy", temperature: "24°"), TimelyWeatherView(time: "12", weather: "cloudy", temperature: "25°")]
     
     init(location: String, temperature: String, weather: String, maxTemperature: String, minTemperature: String) {
         locationLabel.text = location
@@ -119,117 +43,160 @@ class WeatherDetailedInfoVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setBackgroundImage()
-        self.setLayout()
         self.navigationController?.navigationBar.isHidden = true
+        self.setBackgroundImage()
+        self.setUI()
     }
     
 }
 
 extension WeatherDetailedInfoVC {
     
-    private func setLayout() {
-        [verticalScrollView].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            self.view.addSubview($0)
+    private func setUI() {
+        setStyle()
+        setLayout()
+    }
+    
+    private func setStyle() {
+        verticalScrollView.do {
+            $0.alwaysBounceVertical = true
+            $0.showsVerticalScrollIndicator = false
         }
         
-        NSLayoutConstraint.activate([
-            verticalScrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            verticalScrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-            verticalScrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            verticalScrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
-        ])
+        locationLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Regular", size: 45)
+        }
+        
+        temperatureLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Light", size: 75)
+        }
+        
+        weatherLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Regular", size: 25)
+        }
+        
+        maxtemperatureLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Regular", size: 23)
+        }
+        
+        mintemperatureLabel.do {
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Regular", size: 23)
+        }
+        
+        descriptionView.do {
+            $0.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+            $0.layer.cornerRadius = 20
+        }
+        
+        descriptionLabel.do {
+            $0.text = "08:00~09:00에 강우 상태가, 18:00에 한때 흐린 상태가 예상됩니다."
+            $0.numberOfLines = 0
+            $0.textColor = .white
+            $0.font = UIFont(name: "SFProDisplay-Regular", size: 17)
+        }
+        
+        lineView.do {
+            $0.backgroundColor = UIColor.white.withAlphaComponent(0.3)
+        }
+        
+        horizontalScrollView.do {
+            $0.showsHorizontalScrollIndicator = false
+        }
+        
+        timelyWeatherStackView.do {
+            $0.axis = .horizontal
+            $0.distribution = .equalSpacing
+            $0.spacing = 10
+        }
+    }
+    
+    private func setLayout() {
+        self.view.addSubview(verticalScrollView)
+        
+        verticalScrollView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
         
         verticalScrollView.addSubview(contentView)
-        contentView.translatesAutoresizingMaskIntoConstraints = false
         
-        NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: verticalScrollView.contentLayoutGuide.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: verticalScrollView.contentLayoutGuide.bottomAnchor),
-            contentView.leadingAnchor.constraint(equalTo: verticalScrollView.contentLayoutGuide.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: verticalScrollView.contentLayoutGuide.trailingAnchor),
-            contentView.widthAnchor.constraint(equalTo: verticalScrollView.widthAnchor),
-            contentView.heightAnchor.constraint(greaterThanOrEqualTo: verticalScrollView.heightAnchor)
-        ])
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(verticalScrollView)
+            $0.width.equalTo(verticalScrollView)
+            $0.height.greaterThanOrEqualTo(verticalScrollView.snp.height)
+        }
         
         [locationLabel, temperatureLabel, weatherLabel, maxtemperatureLabel, mintemperatureLabel, descriptionView].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
         
-        NSLayoutConstraint.activate([
-            locationLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            locationLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
-        ])
+        locationLabel.snp.makeConstraints {
+            $0.top.equalTo(contentView).inset(20)
+            $0.centerX.equalToSuperview()
+        }
         
-        NSLayoutConstraint.activate([
-            temperatureLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 5),
-            temperatureLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
-        ])
+        temperatureLabel.snp.makeConstraints {
+            $0.top.equalTo(locationLabel.snp.bottom).offset(5)
+            $0.centerX.equalToSuperview()
+        }
         
-        NSLayoutConstraint.activate([
-            weatherLabel.topAnchor.constraint(equalTo: temperatureLabel.bottomAnchor, constant: 5),
-            weatherLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
-        ])
+        weatherLabel.snp.makeConstraints {
+            $0.top.equalTo(temperatureLabel.snp.bottom).offset(5)
+            $0.centerX.equalToSuperview()
+        }
         
-        NSLayoutConstraint.activate([
-            maxtemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 3),
-            maxtemperatureLabel.trailingAnchor.constraint(equalTo: self.view.centerXAnchor, constant: -3)
-        ])
+        maxtemperatureLabel.snp.makeConstraints {
+            $0.top.equalTo(weatherLabel.snp.bottom).offset(3)
+            $0.trailing.equalTo(view.snp.centerX).offset(-3)
+        }
         
-        NSLayoutConstraint.activate([
-            mintemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 3),
-            mintemperatureLabel.leadingAnchor.constraint(equalTo: self.view.centerXAnchor, constant: 3)
-        ])
+        mintemperatureLabel.snp.makeConstraints {
+            $0.top.equalTo(maxtemperatureLabel)
+            $0.leading.equalTo(view.snp.centerX).offset(3)
+        }
         
-        NSLayoutConstraint.activate([
-            descriptionView.topAnchor.constraint(equalTo: maxtemperatureLabel.bottomAnchor, constant: 50),
-            descriptionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 17),
-            descriptionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -17),
-        ])
+        descriptionView.snp.makeConstraints {
+            $0.top.equalTo(maxtemperatureLabel.snp.bottom).offset(50)
+            $0.leading.trailing.equalTo(contentView).inset(17)
+        }
         
         [descriptionLabel, lineView, horizontalScrollView].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
             descriptionView.addSubview($0)
         }
         
-        NSLayoutConstraint.activate([
-            descriptionLabel.topAnchor.constraint(equalTo: descriptionView.topAnchor, constant: 8),
-            descriptionLabel.leadingAnchor.constraint(equalTo: descriptionView.leadingAnchor, constant: 13),
-            descriptionLabel.trailingAnchor.constraint(equalTo: descriptionView.trailingAnchor, constant: -13)
-        ])
+        descriptionLabel.snp.makeConstraints {
+            $0.top.equalTo(descriptionView).inset(8)
+            $0.leading.trailing.equalTo(descriptionView).inset(13)
+        }
         
-        NSLayoutConstraint.activate([
-            lineView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 10),
-            lineView.leadingAnchor.constraint(equalTo: descriptionView.leadingAnchor, constant: 13),
-            lineView.trailingAnchor.constraint(equalTo: descriptionView.trailingAnchor, constant: -13),
-            lineView.heightAnchor.constraint(equalToConstant: 0.3)
-        ])
+        lineView.snp.makeConstraints {
+            $0.top.equalTo(descriptionLabel.snp.bottom).offset(10)
+            $0.leading.trailing.equalTo(descriptionView).inset(13)
+            $0.height.equalTo(0.3)
+        }
         
-        NSLayoutConstraint.activate([
-            horizontalScrollView.topAnchor.constraint(equalTo: lineView.bottomAnchor),
-            horizontalScrollView.bottomAnchor.constraint(equalTo: descriptionView.bottomAnchor),
-            horizontalScrollView.leadingAnchor.constraint(equalTo: descriptionView.leadingAnchor),
-            horizontalScrollView.trailingAnchor.constraint(equalTo: descriptionView.trailingAnchor)
-        ])
+        horizontalScrollView.snp.makeConstraints {
+            $0.top.equalTo(lineView.snp.bottom)
+            $0.bottom.leading.trailing.equalTo(descriptionView)
+        }
         
         horizontalScrollView.addSubview(timelyWeatherStackView)
-        timelyWeatherStackView.translatesAutoresizingMaskIntoConstraints = false
         
-        NSLayoutConstraint.activate([
-            timelyWeatherStackView.topAnchor.constraint(equalTo: horizontalScrollView.contentLayoutGuide.topAnchor),
-            timelyWeatherStackView.bottomAnchor.constraint(equalTo: horizontalScrollView.contentLayoutGuide.bottomAnchor),
-            timelyWeatherStackView.leadingAnchor.constraint(equalTo: horizontalScrollView.contentLayoutGuide.leadingAnchor),
-            timelyWeatherStackView.trailingAnchor.constraint(equalTo: horizontalScrollView.contentLayoutGuide.trailingAnchor),
-            timelyWeatherStackView.heightAnchor.constraint(equalTo: horizontalScrollView.heightAnchor)
-        ])
+        timelyWeatherStackView.snp.makeConstraints {
+            $0.edges.equalTo(horizontalScrollView.contentLayoutGuide)
+            $0.height.equalTo(horizontalScrollView)
+        }
         
-        [timelyWeatherInfoView1, timelyWeatherInfoView2, timelyWeatherInfoView3, timelyWeatherInfoView4, timelyWeatherInfoView5, timelyWeatherInfoView6, timelyWeatherInfoView7,timelyWeatherInfoView8, timelyWeatherInfoView9, timelyWeatherInfoView10, timelyWeatherInfoView11, timelyWeatherInfoView12].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            ($0.widthAnchor.constraint(equalToConstant: 65)).isActive = true
-            ($0.heightAnchor.constraint(equalToConstant: 105)).isActive = true
-            timelyWeatherStackView.addArrangedSubview($0)
+        timelyWeatherInfoViewList.forEach { view in
+            timelyWeatherStackView.addArrangedSubview(view)
+            view.snp.makeConstraints {
+                $0.width.equalTo(65)
+                $0.height.equalTo(105)
+            }
         }
     }
     
