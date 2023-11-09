@@ -12,13 +12,10 @@ import Then
 
 class ViewController: UIViewController {
     
-    var weatherInfoViewList = [WeatherInfoView(location: "서울", weather: "흐림", temperature: "25°", maxTemperature: "27°", minTemperature: "23°"), WeatherInfoView(location: "분당구", weather: "맑음", temperature: "25°", maxTemperature: "27°", minTemperature: "24°"), WeatherInfoView(location: "뉴욕", weather: "맑음", temperature: "23°", maxTemperature: "25°", minTemperature: "21°")]
-    
     private lazy var rightBarButtonItem = UIBarButtonItem()
     private let locationSearchController = UISearchController()
-    private let scrollView = UIScrollView()
-    private var contentView = UIView()
-    private var weatherInfoStackView = UIStackView()
+    private let tableView = UITableView(frame: .zero, style: .plain)
+    var searchWeatherInfoListData = weatherInfoListData
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +23,7 @@ class ViewController: UIViewController {
         self.setNavigation()
         self.setUI()
         self.setSearchController()
+        self.setTableViewConfig()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -59,48 +57,18 @@ extension ViewController {
             $0.hidesNavigationBarDuringPresentation = true
         }
         
-        scrollView.do {
-            $0.alwaysBounceVertical = true
-            $0.showsVerticalScrollIndicator = false
-        }
-        
-        weatherInfoStackView.do {
-            $0.axis = .vertical
-            $0.distribution = .equalSpacing
-            $0.spacing = 20
+        tableView.do {
+            $0.backgroundColor = .black
         }
     }
     
     private func setLayout() {
-        self.view.addSubview(scrollView)
+        self.view.addSubview(tableView)
         
-        scrollView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+        tableView.snp.makeConstraints {
+            $0.top.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview().inset(16)
         }
-        
-        scrollView.addSubview(contentView)
-        
-        contentView.snp.makeConstraints {
-            $0.edges.equalTo(scrollView)
-            $0.width.equalTo(scrollView.snp.width)
-        }
-        
-        contentView.addSubview(weatherInfoStackView)
-        
-        weatherInfoStackView.snp.makeConstraints {
-            $0.top.equalTo(contentView.snp.top).inset(7)
-            $0.bottom.equalTo(contentView.snp.bottom)
-            $0.leading.trailing.equalTo(contentView).inset(16)
-        }
-        
-        weatherInfoViewList.forEach { view in
-            view.delegate = self
-            weatherInfoStackView.addArrangedSubview(view)
-            view.snp.makeConstraints {
-                $0.height.equalTo(120)
-            }
-        }
-        
     }
     
     private func setNavigation() {
@@ -120,37 +88,56 @@ extension ViewController {
         self.locationSearchController.searchResultsUpdater = self
     }
     
+    private func setTableViewConfig() {
+        self.tableView.register(WeatherInfoTableViewCell.self,
+                                forCellReuseIdentifier: WeatherInfoTableViewCell.identifier)
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+    }
+    
 }
 
-extension ViewController: WeatherInfoViewDelegate {
+extension ViewController: UITableViewDelegate {
     
-    func weatherInfoViewTapped(_ weatherInfoView: WeatherInfoView) {
-        let weatherDetailedInfoPageVC = WeatherDetailedInfoPageVC(weatherInfoViewList: weatherInfoViewList)
-        weatherDetailedInfoPageVC.initialPage = weatherInfoViewList.firstIndex(of: weatherInfoView)!
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 140
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let weatherDetailedInfoPageVC = WeatherDetailedInfoPageVC()
+        weatherDetailedInfoPageVC.initialPage = weatherInfoListData.firstIndex(of: searchWeatherInfoListData[indexPath.row])!
         self.navigationController?.pushViewController(weatherDetailedInfoPageVC, animated: true)
     }
     
 }
 
-extension ViewController: UISearchResultsUpdating {
+
+extension ViewController: UITableViewDataSource {
     
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let searchText = searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() else {
-            return
-        }
-        weatherInfoStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        if searchText.isEmpty {
-            for weatherInfoView in weatherInfoViewList {
-                weatherInfoStackView.addArrangedSubview(weatherInfoView)
-            }
-        } else {
-            for weatherInfoView in weatherInfoViewList {
-                let location = weatherInfoView.locationLabel.text!.lowercased()
-                if location.contains(searchText) {
-                    weatherInfoStackView.addArrangedSubview(weatherInfoView)
-                }
-            }
-        }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return searchWeatherInfoListData.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: WeatherInfoTableViewCell.identifier,
+                                                       for: indexPath) as? WeatherInfoTableViewCell else {return UITableViewCell()}
+        cell.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+        cell.selectionStyle = .none
+        cell.bindData(data: searchWeatherInfoListData[indexPath.row])
+        return cell
     }
     
 }
+
+extension ViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text else { return }
+        if searchText.isEmpty {
+            searchWeatherInfoListData = weatherInfoListData
+        } else {
+            searchWeatherInfoListData = weatherInfoListData.filter { $0.location.lowercased().contains(searchText.lowercased()) }
+        }
+        tableView.reloadData()
+    }
+}
+

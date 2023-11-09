@@ -13,7 +13,6 @@ import Then
 class WeatherDetailedInfoPageVC: UIPageViewController {
     
     var initialPage = 0
-    var weatherInfoViewList:[WeatherInfoView] = []
     
     private var pages = [UIViewController]()
     private let pageControl = UIPageControl()
@@ -22,9 +21,8 @@ class WeatherDetailedInfoPageVC: UIPageViewController {
     private let mapButton = UIButton()
     private let listButton = UIButton()
     
-    init(weatherInfoViewList: [WeatherInfoView]) {
+    init() {
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
-        self.weatherInfoViewList = weatherInfoViewList
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -45,11 +43,12 @@ class WeatherDetailedInfoPageVC: UIPageViewController {
 extension WeatherDetailedInfoPageVC {
     
     private func setPage() {
-        for i in 0..<weatherInfoViewList.count {
-            let weatherDetailedInfoVC = WeatherDetailedInfoVC(location: weatherInfoViewList[i].locationLabel.text!, temperature: weatherInfoViewList[i].temperatureLabel.text!, weather: weatherInfoViewList[i].weatherLabel.text!, maxTemperature: weatherInfoViewList[i].maxtemperatureLabel.text!, minTemperature: weatherInfoViewList[i].mintemperatureLabel.text!)
+        for i in 0..<weatherInfoListData.count {
+            let weatherDetailedInfoVC = WeatherDetailedInfoVC()
+            weatherDetailedInfoVC.bindData(data: weatherInfoListData[i])
             pages.append(weatherDetailedInfoVC)
         }
-        self.pageControl.numberOfPages = weatherInfoViewList.count
+        self.pageControl.numberOfPages = weatherInfoListData.count
         self.pageControl.setIndicatorImage(UIImage(named: "gps_image"), forPage: 0)
         self.pageControl.currentPage = initialPage
         self.setViewControllers([pages[initialPage]], direction: .forward, animated: true)
@@ -67,7 +66,7 @@ extension WeatherDetailedInfoPageVC {
     
     private func setStyle() {
         toolbar.do {
-            $0.backgroundColor = .clear
+            $0.backgroundColor = #colorLiteral(red: 0.1647058824, green: 0.1882352941, blue: 0.2509803922, alpha: 1)
             $0.tintColor = UIColor.black.withAlphaComponent(0.1)
             $0.barTintColor = .clear
             $0.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)

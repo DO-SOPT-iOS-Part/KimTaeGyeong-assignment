@@ -1,5 +1,5 @@
 //
-//  WeatherInfoView.swift
+//  WeatherInfoTableViewCell.swift
 //  apple-weather-app-clone
 //
 //  Created by 티모시 킴 on 10/20/23.
@@ -10,32 +10,35 @@ import UIKit
 import SnapKit
 import Then
 
-class WeatherInfoView: UIView {
+class WeatherInfoTableViewCell: UITableViewCell {
     
-    weak var delegate: WeatherInfoViewDelegate?
+    static let identifier: String = "WeatherInfoTableViewCell"
     
-    let backgroundImageView = UIImageView(image: UIImage(named: "background_image2"))
-    let myLocationLabel = UILabel()
-    let locationLabel = UILabel()
-    let weatherLabel = UILabel()
-    let temperatureLabel = UILabel()
-    let maxtemperatureLabel = UILabel()
-    let mintemperatureLabel = UILabel()
+    private let backgroundImageView = UIImageView(image: UIImage(named: "background_image2"))
+    private let myLocationLabel = UILabel()
+    private let locationLabel = UILabel()
+    private let weatherLabel = UILabel()
+    private let temperatureLabel = UILabel()
+    private let maxtemperatureLabel = UILabel()
+    private let mintemperatureLabel = UILabel()
     
-    init(location: String, weather: String, temperature: String, maxTemperature: String, minTemperature: String) {
-        super.init(frame: .zero)
-        self.bindData(location: location, weather: weather, temperature: temperature, maxTemperature: maxTemperature, minTemperature: minTemperature)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.setUI()
-        self.setupGestureRecognizers()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0))
+    }
+    
 }
 
-extension WeatherInfoView {
+extension WeatherInfoTableViewCell {
     
     private func setUI() {
         setStyle()
@@ -81,16 +84,16 @@ extension WeatherInfoView {
     
     private func setLayout() {
         [backgroundImageView, myLocationLabel, locationLabel, weatherLabel, temperatureLabel, maxtemperatureLabel, mintemperatureLabel].forEach {
-            addSubview($0)
+            contentView.addSubview($0)
         }
         
         backgroundImageView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.edges.equalTo(contentView)
         }
         
         myLocationLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(7)
-            $0.leading.equalToSuperview().inset(15)
+            $0.top.equalTo(contentView).inset(7)
+            $0.leading.equalTo(contentView).inset(15)
         }
         
         locationLabel.snp.makeConstraints {
@@ -99,13 +102,13 @@ extension WeatherInfoView {
         }
         
         weatherLabel.snp.makeConstraints {
-            $0.bottom.equalToSuperview().inset(7)
+            $0.bottom.equalTo(contentView).inset(7)
             $0.leading.equalTo(myLocationLabel)
         }
         
         temperatureLabel.snp.makeConstraints {
             $0.top.equalTo(myLocationLabel)
-            $0.trailing.equalToSuperview().inset(15)
+            $0.trailing.equalTo(contentView).inset(15)
         }
         
         mintemperatureLabel.snp.makeConstraints {
@@ -119,21 +122,12 @@ extension WeatherInfoView {
         }
     }
     
-    private func bindData(location: String, weather: String, temperature: String, maxTemperature: String, minTemperature: String) {
-        locationLabel.text = location
-        weatherLabel.text = weather
-        temperatureLabel.text = temperature
-        maxtemperatureLabel.text = "최고:\(maxTemperature)"
-        mintemperatureLabel.text = "최저:\(minTemperature)"
-    }
-    
-    private func setupGestureRecognizers() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        self.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc private func handleTap(_ sender: UITapGestureRecognizer) {
-        delegate?.weatherInfoViewTapped(self)
+    func bindData(data: WeatherInfoListData) {
+        self.locationLabel.text = data.location
+        self.weatherLabel.text = data.weather
+        self.temperatureLabel.text = "\(data.temperature)°"
+        self.maxtemperatureLabel.text = "최고:\(data.maxTemperature)°"
+        self.mintemperatureLabel.text = "최저:\(data.minTemperature)°"
     }
     
 }
