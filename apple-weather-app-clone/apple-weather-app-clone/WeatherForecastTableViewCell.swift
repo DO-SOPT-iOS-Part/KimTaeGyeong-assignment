@@ -67,6 +67,7 @@ extension WeatherForecastTableViewCell {
         minTemperatureLabel.do {
             $0.textColor = UIColor.white.withAlphaComponent(0.3)
             $0.font = UIFont(name: "SFProDisplay-Regular", size: 19)
+            $0.textAlignment = .right
         }
         
         temperatureBarImageView.do {
@@ -76,6 +77,7 @@ extension WeatherForecastTableViewCell {
         maxTemperatureLabel.do {
             $0.textColor = .white
             $0.font = UIFont(name: "SFProDisplay-Regular", size: 19)
+            $0.textAlignment = .right
         }
         
     }
@@ -97,7 +99,7 @@ extension WeatherForecastTableViewCell {
         }
         
         stackView.snp.makeConstraints {
-            $0.leading.equalTo(dayLabel.snp.trailing).offset(30)
+            $0.leading.equalTo(dayLabel.snp.trailing).offset(25)
             $0.centerY.equalToSuperview()
             $0.width.equalTo(33)
         }
@@ -111,6 +113,7 @@ extension WeatherForecastTableViewCell {
         minTemperatureLabel.snp.makeConstraints {
             $0.trailing.equalTo(temperatureBarImageView.snp.leading).offset(-5)
             $0.centerY.equalToSuperview()
+            $0.width.equalTo(40)
         }
         
         temperatureBarImageView.snp.makeConstraints {
@@ -121,6 +124,7 @@ extension WeatherForecastTableViewCell {
         maxTemperatureLabel.snp.makeConstraints {
             $0.trailing.equalTo(lineView)
             $0.centerY.equalToSuperview()
+            $0.width.equalTo(40)
         }
     }
     
