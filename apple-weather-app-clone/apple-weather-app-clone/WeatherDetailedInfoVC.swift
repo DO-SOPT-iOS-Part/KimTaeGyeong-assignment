@@ -64,6 +64,7 @@ extension WeatherDetailedInfoVC {
             $0.isScrollEnabled = false
             $0.backgroundColor = .black.withAlphaComponent(0.1)
             $0.layer.cornerRadius = 20
+            $0.separatorStyle = .none
         }
     }
     
@@ -95,7 +96,7 @@ extension WeatherDetailedInfoVC {
         
         descriptionView.snp.makeConstraints {
             $0.top.equalTo(weatherDetailedInfoView.snp.bottom).offset(100)
-            $0.leading.trailing.equalToSuperview().inset(17)
+            $0.leading.trailing.equalToSuperview().inset(20)
         }
         
         [weatherBriefingView, collectionView].forEach {
@@ -104,7 +105,7 @@ extension WeatherDetailedInfoVC {
         
         weatherBriefingView.snp.makeConstraints {
             $0.top.equalTo(descriptionView).inset(10)
-            $0.leading.trailing.equalTo(descriptionView).inset(17)
+            $0.leading.trailing.equalTo(descriptionView).inset(16)
         }
         
         collectionView.snp.makeConstraints {
@@ -116,7 +117,7 @@ extension WeatherDetailedInfoVC {
         tableView.snp.makeConstraints {
             $0.top.equalTo(descriptionView.snp.bottom).offset(10)
             $0.bottom.equalTo(contentView).inset(30)
-            $0.leading.trailing.equalToSuperview().inset(17)
+            $0.leading.trailing.equalToSuperview().inset(16)
             $0.height.equalTo(590)
         }
     }

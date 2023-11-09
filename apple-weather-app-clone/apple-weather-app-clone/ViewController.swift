@@ -59,6 +59,7 @@ extension ViewController {
         
         tableView.do {
             $0.backgroundColor = .black
+            $0.separatorStyle = .none
         }
     }
     
@@ -100,7 +101,7 @@ extension ViewController {
 extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 140
+        return 135
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
