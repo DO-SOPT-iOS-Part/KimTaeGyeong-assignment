@@ -45,6 +45,7 @@ DerivedData/
 ### Xcode ###
 ## User settings
 xcuserdata/
+*.xcconfig
 
 ## Xcode 8 and earlier
 *.xcscmblueprint
