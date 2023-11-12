@@ -7,229 +7,118 @@
 
 import UIKit
 
+import SnapKit
+import Then
+
 class WeatherDetailedInfoVC: UIViewController {
     
-    private let verticalScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.alwaysBounceVertical = true
-        scrollView.showsVerticalScrollIndicator = false
-        return scrollView
-    }()
-    
+    private let verticalScrollView = UIScrollView()
     private var contentView = UIView()
-    
-    private let locationLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 45)
-        return label
-    }()
-    
-    private let temperatureLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Light", size: 75)
-        return label
-    }()
-    
-    private let weatherLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 25)
-        return label
-    }()
-    
-    private let maxtemperatureLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 23)
-        return label
-    }()
-    
-    private let mintemperatureLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 23)
-        return label
-    }()
-    
-    private let descriptionView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.2)
-        view.layer.cornerRadius = 20
-        return view
-    }()
-    
-    private let descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "08:00~09:00에 강우 상태가, 18:00에 한때 흐린 상태가 예상됩니다."
-        label.numberOfLines = 0
-        label.textColor = .white
-        label.font = UIFont(name: "SFProDisplay-Regular", size: 17)
-        return label
-    }()
-    
-    private let lineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.white.withAlphaComponent(0.3)
-        return view
-    }()
-    
-    private let horizontalScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.showsHorizontalScrollIndicator = false
-        return scrollView
-    }()
-    
-    private var timelyWeatherContentView = UIView()
-    
-    private var timelyWeatherStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 10
-        return stackView
-    }()
-    
-    let timelyWeatherInfoView1 = TimelyWeatherView(time: "1", weather: "cloudy", temperature: "25°")
-    let timelyWeatherInfoView2 = TimelyWeatherView(time: "2", weather: "heavy rain", temperature: "24°")
-    let timelyWeatherInfoView3 = TimelyWeatherView(time: "3", weather: "party cloudy", temperature: "23°")
-    let timelyWeatherInfoView4 = TimelyWeatherView(time: "4", weather: "rain", temperature: "22°")
-    let timelyWeatherInfoView5 = TimelyWeatherView(time: "5", weather: "thunderstorms", temperature: "21°")
-    let timelyWeatherInfoView6 = TimelyWeatherView(time: "6", weather: "rain", temperature: "20°")
-    let timelyWeatherInfoView7 = TimelyWeatherView(time: "7", weather: "party cloudy", temperature: "20°")
-    let timelyWeatherInfoView8 = TimelyWeatherView(time: "8", weather: "heavy rain", temperature: "21°")
-    let timelyWeatherInfoView9 = TimelyWeatherView(time: "9", weather: "cloudy", temperature: "22°")
-    let timelyWeatherInfoView10 = TimelyWeatherView(time: "10", weather: "cloudy", temperature: "23°")
-    let timelyWeatherInfoView11 = TimelyWeatherView(time: "11", weather: "cloudy", temperature: "24°")
-    let timelyWeatherInfoView12 = TimelyWeatherView(time: "12", weather: "cloudy", temperature: "25°")
-    
-    init(location: String, temperature: String, weather: String, maxTemperature: String, minTemperature: String) {
-        locationLabel.text = location
-        temperatureLabel.text = temperature
-        weatherLabel.text = weather
-        maxtemperatureLabel.text = maxTemperature
-        mintemperatureLabel.text = minTemperature
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    private let weatherDetailedInfoView = WeatherDetailedInfoView()
+    private let descriptionView = UIView()
+    private let weatherBriefingView = WeatherBriefingView()
+    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private let tableView = UITableView(frame: .zero, style: .plain)
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setBackgroundImage()
-        self.setLayout()
         self.navigationController?.navigationBar.isHidden = true
+        self.setBackgroundImage()
+        self.setCollectionViewConfig()
+        self.setTableViewConfig()
+        self.setUI()
     }
     
 }
 
 extension WeatherDetailedInfoVC {
     
-    private func setLayout() {
-        [verticalScrollView].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            self.view.addSubview($0)
+    private func setUI() {
+        setStyle()
+        setLayout()
+    }
+    
+    private func setStyle() {
+        verticalScrollView.do {
+            $0.showsVerticalScrollIndicator = false
         }
         
-        NSLayoutConstraint.activate([
-            verticalScrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            verticalScrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-            verticalScrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            verticalScrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
-        ])
+        descriptionView.do {
+            $0.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+            $0.layer.cornerRadius = 20
+        }
+        
+        weatherBriefingView.do {
+            $0.bindData(text: "08:00~09:00에 강우 상태가, 18:00에 한때 흐린 상태가 예상됩니다.")
+        }
+        
+        collectionView.do {
+            $0.showsHorizontalScrollIndicator = false
+            $0.backgroundColor = .clear
+            $0.layer.cornerRadius = 20
+        }
+        
+        tableView.do {
+            $0.sectionHeaderTopPadding = 0
+            $0.showsVerticalScrollIndicator = false
+            $0.isScrollEnabled = false
+            $0.backgroundColor = .black.withAlphaComponent(0.1)
+            $0.layer.cornerRadius = 20
+            $0.separatorStyle = .none
+        }
+    }
+    
+    private func setLayout() {
+        self.view.addSubview(verticalScrollView)
+        
+        verticalScrollView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(80)
+        }
         
         verticalScrollView.addSubview(contentView)
-        contentView.translatesAutoresizingMaskIntoConstraints = false
         
-        NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: verticalScrollView.contentLayoutGuide.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: verticalScrollView.contentLayoutGuide.bottomAnchor),
-            contentView.leadingAnchor.constraint(equalTo: verticalScrollView.contentLayoutGuide.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: verticalScrollView.contentLayoutGuide.trailingAnchor),
-            contentView.widthAnchor.constraint(equalTo: verticalScrollView.widthAnchor),
-            contentView.heightAnchor.constraint(greaterThanOrEqualTo: verticalScrollView.heightAnchor)
-        ])
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(verticalScrollView)
+            $0.width.equalTo(verticalScrollView)
+            $0.height.greaterThanOrEqualTo(verticalScrollView.snp.height)
+        }
         
-        [locationLabel, temperatureLabel, weatherLabel, maxtemperatureLabel, mintemperatureLabel, descriptionView].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
+        [weatherDetailedInfoView, descriptionView, tableView].forEach {
             contentView.addSubview($0)
         }
         
-        NSLayoutConstraint.activate([
-            locationLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            locationLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
-        ])
+        weatherDetailedInfoView.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(15)
+            $0.height.equalTo(212)
+            $0.centerX.equalToSuperview()
+        }
         
-        NSLayoutConstraint.activate([
-            temperatureLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 5),
-            temperatureLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
-        ])
+        descriptionView.snp.makeConstraints {
+            $0.top.equalTo(weatherDetailedInfoView.snp.bottom).offset(100)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
         
-        NSLayoutConstraint.activate([
-            weatherLabel.topAnchor.constraint(equalTo: temperatureLabel.bottomAnchor, constant: 5),
-            weatherLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
-        ])
-        
-        NSLayoutConstraint.activate([
-            maxtemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 3),
-            maxtemperatureLabel.trailingAnchor.constraint(equalTo: self.view.centerXAnchor, constant: -3)
-        ])
-        
-        NSLayoutConstraint.activate([
-            mintemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 3),
-            mintemperatureLabel.leadingAnchor.constraint(equalTo: self.view.centerXAnchor, constant: 3)
-        ])
-        
-        NSLayoutConstraint.activate([
-            descriptionView.topAnchor.constraint(equalTo: maxtemperatureLabel.bottomAnchor, constant: 50),
-            descriptionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 17),
-            descriptionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -17),
-        ])
-        
-        [descriptionLabel, lineView, horizontalScrollView].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
+        [weatherBriefingView, collectionView].forEach {
             descriptionView.addSubview($0)
         }
         
-        NSLayoutConstraint.activate([
-            descriptionLabel.topAnchor.constraint(equalTo: descriptionView.topAnchor, constant: 8),
-            descriptionLabel.leadingAnchor.constraint(equalTo: descriptionView.leadingAnchor, constant: 13),
-            descriptionLabel.trailingAnchor.constraint(equalTo: descriptionView.trailingAnchor, constant: -13)
-        ])
+        weatherBriefingView.snp.makeConstraints {
+            $0.top.equalTo(descriptionView).inset(10)
+            $0.leading.trailing.equalTo(descriptionView).inset(16)
+        }
         
-        NSLayoutConstraint.activate([
-            lineView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 10),
-            lineView.leadingAnchor.constraint(equalTo: descriptionView.leadingAnchor, constant: 13),
-            lineView.trailingAnchor.constraint(equalTo: descriptionView.trailingAnchor, constant: -13),
-            lineView.heightAnchor.constraint(equalToConstant: 0.3)
-        ])
+        collectionView.snp.makeConstraints {
+            $0.top.equalTo(weatherBriefingView.snp.bottom)
+            $0.leading.trailing.bottom.equalTo(descriptionView)
+            $0.height.equalTo(120)
+        }
         
-        NSLayoutConstraint.activate([
-            horizontalScrollView.topAnchor.constraint(equalTo: lineView.bottomAnchor),
-            horizontalScrollView.bottomAnchor.constraint(equalTo: descriptionView.bottomAnchor),
-            horizontalScrollView.leadingAnchor.constraint(equalTo: descriptionView.leadingAnchor),
-            horizontalScrollView.trailingAnchor.constraint(equalTo: descriptionView.trailingAnchor)
-        ])
-        
-        horizontalScrollView.addSubview(timelyWeatherStackView)
-        timelyWeatherStackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            timelyWeatherStackView.topAnchor.constraint(equalTo: horizontalScrollView.contentLayoutGuide.topAnchor),
-            timelyWeatherStackView.bottomAnchor.constraint(equalTo: horizontalScrollView.contentLayoutGuide.bottomAnchor),
-            timelyWeatherStackView.leadingAnchor.constraint(equalTo: horizontalScrollView.contentLayoutGuide.leadingAnchor),
-            timelyWeatherStackView.trailingAnchor.constraint(equalTo: horizontalScrollView.contentLayoutGuide.trailingAnchor),
-            timelyWeatherStackView.heightAnchor.constraint(equalTo: horizontalScrollView.heightAnchor)
-        ])
-        
-        [timelyWeatherInfoView1, timelyWeatherInfoView2, timelyWeatherInfoView3, timelyWeatherInfoView4, timelyWeatherInfoView5, timelyWeatherInfoView6, timelyWeatherInfoView7,timelyWeatherInfoView8, timelyWeatherInfoView9, timelyWeatherInfoView10, timelyWeatherInfoView11, timelyWeatherInfoView12].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            ($0.widthAnchor.constraint(equalToConstant: 65)).isActive = true
-            ($0.heightAnchor.constraint(equalToConstant: 105)).isActive = true
-            timelyWeatherStackView.addArrangedSubview($0)
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(descriptionView.snp.bottom).offset(10)
+            $0.bottom.equalTo(contentView).inset(30)
+            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.height.equalTo(590)
         }
     }
     
@@ -238,6 +127,74 @@ extension WeatherDetailedInfoVC {
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.frame = view.bounds
         view.insertSubview(backgroundImageView, at: 0)
+    }
+    
+    private func setCollectionViewConfig() {
+        self.collectionView.register(TimelyWeatherCollectionViewCell.self,
+                                     forCellWithReuseIdentifier: TimelyWeatherCollectionViewCell.identifier)
+        self.collectionView.delegate = self
+        self.collectionView.dataSource = self
+        let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.itemSize = CGSize(width: (UIScreen.main.bounds.width - 60) / 5 , height: 142)
+        flowLayout.scrollDirection = .horizontal
+        self.collectionView.setCollectionViewLayout(flowLayout, animated: false)
+    }
+    
+    private func setTableViewConfig() {
+        self.tableView.register(WeatherForecastTableViewCell.self,
+                                forCellReuseIdentifier: WeatherForecastTableViewCell.identifier)
+        self.tableView.register(CustomTableHeaderView.self, forHeaderFooterViewReuseIdentifier: CustomTableHeaderView.identifier)
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+    }
+    
+    func bindData(data: WeatherInfoListData) {
+        weatherDetailedInfoView.bindData(data: data)
+    }
+    
+}
+
+extension WeatherDetailedInfoVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return timelyWeatherListData.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let item = collectionView.dequeueReusableCell(withReuseIdentifier: TimelyWeatherCollectionViewCell.identifier,
+                                                            for: indexPath) as? TimelyWeatherCollectionViewCell else {return UICollectionViewCell()}
+        item.bindData(data: timelyWeatherListData[indexPath.row])
+        return item
+    }
+    
+}
+
+extension WeatherDetailedInfoVC: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return weatherForecastListData.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: WeatherForecastTableViewCell.identifier,
+                                                       for: indexPath) as? WeatherForecastTableViewCell else {return UITableViewCell()}
+        cell.bindData(data: weatherForecastListData[indexPath.row])
+        cell.backgroundColor = .clear
+        cell.selectionStyle = .none
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        55
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: CustomTableHeaderView.identifier) as? CustomTableHeaderView
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        40
     }
     
 }

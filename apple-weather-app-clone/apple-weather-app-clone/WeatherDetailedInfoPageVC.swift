@@ -8,51 +8,21 @@
 import UIKit
 
 import SnapKit
+import Then
 
 class WeatherDetailedInfoPageVC: UIPageViewController {
     
-    var weatherInfoViewList:[WeatherInfoView] = []
-    
     var initialPage = 0
+    
     private var pages = [UIViewController]()
+    private let pageControl = UIPageControl()
+    private let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+    private let lineView = UIView()
+    private let mapButton = UIButton()
+    private let listButton = UIButton()
     
-    private let pageControl: UIPageControl = {
-        let pageControl = UIPageControl()
-        pageControl.translatesAutoresizingMaskIntoConstraints = false
-        return pageControl
-    }()
-    
-    private let toolbar: UIToolbar = {
-        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
-        toolbar.backgroundColor = .clear
-        toolbar.tintColor = UIColor.black.withAlphaComponent(0.1)
-        toolbar.barTintColor = .clear
-        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-        toolbar.translatesAutoresizingMaskIntoConstraints = false
-        return toolbar
-    }()
-    
-    private let lineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.white.withAlphaComponent(0.3)
-        return view
-    }()
-    
-    private let mapButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "map_image"), for: .normal)
-        return button
-    }()
-    
-    private let listButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "list_image"), for: .normal)
-        return button
-    }()
-    
-    init(weatherInfoViewList: [WeatherInfoView]) {
+    init() {
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
-        self.weatherInfoViewList = weatherInfoViewList
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -61,44 +31,66 @@ class WeatherDetailedInfoPageVC: UIPageViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setPage()
-        setUI()
-        setDelegate()
-        setHierarchy()
-        setLayout()
-        setToolBar()
-        setAddTarget()
+        self.setPage()
+        self.setDelegate()
+        self.setUI()
+        self.setToolBar()
+        self.setAddTarget()
     }
     
 }
 
 extension WeatherDetailedInfoPageVC {
     
-    func setPage() {
-        for i in 0..<weatherInfoViewList.count {
-            let weatherDetailedInfoVC = WeatherDetailedInfoVC(location: weatherInfoViewList[i].locationLabel.text!, temperature: weatherInfoViewList[i].temperatureLabel.text!, weather: weatherInfoViewList[i].weatherLabel.text!, maxTemperature: weatherInfoViewList[i].maxtemperatureLabel.text!, minTemperature: weatherInfoViewList[i].mintemperatureLabel.text!)
+    private func setPage() {
+        for i in 0..<weatherInfoListData.count {
+            let weatherDetailedInfoVC = WeatherDetailedInfoVC()
+            weatherDetailedInfoVC.bindData(data: weatherInfoListData[i])
             pages.append(weatherDetailedInfoVC)
         }
-        self.pageControl.numberOfPages = weatherInfoViewList.count
+        self.pageControl.numberOfPages = weatherInfoListData.count
         self.pageControl.setIndicatorImage(UIImage(named: "gps_image"), forPage: 0)
         self.pageControl.currentPage = initialPage
+        self.setViewControllers([pages[initialPage]], direction: .forward, animated: true)
     }
     
-    func setDelegate() {
+    private func setDelegate() {
         self.dataSource = self
         self.delegate = self
     }
     
-    func setUI() {
-        self.setViewControllers([pages[initialPage]], direction: .forward, animated: true)
+    private func setUI() {
+        setStyle()
+        setLayout()
     }
     
-    func setHierarchy() {
-        view.addSubview(toolbar)
-        view.addSubview(lineView)
+    private func setStyle() {
+        toolbar.do {
+            $0.backgroundColor = #colorLiteral(red: 0.1647058824, green: 0.1882352941, blue: 0.2509803922, alpha: 1)
+            $0.tintColor = UIColor.black.withAlphaComponent(0.1)
+            $0.barTintColor = .clear
+            $0.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        lineView.do {
+            $0.backgroundColor = UIColor.white.withAlphaComponent(0.3)
+        }
+        
+        mapButton.do {
+            $0.setImage(UIImage(named: "map_image"), for: .normal)
+        }
+        
+        listButton.do {
+            $0.setImage(UIImage(named: "list_image"), for: .normal)
+        }
     }
     
-    func setLayout() {
+    private func setLayout() {
+        [toolbar, lineView].forEach {
+            view.addSubview($0)
+        }
+        
         toolbar.snp.makeConstraints {
             $0.bottom.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             $0.height.equalTo(62)
@@ -111,7 +103,7 @@ extension WeatherDetailedInfoPageVC {
         }
     }
     
-    func setToolBar() {
+    private func setToolBar() {
         let leftButton = UIBarButtonItem(customView: mapButton)
         let rightButton = UIBarButtonItem(customView: listButton)
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
@@ -119,7 +111,7 @@ extension WeatherDetailedInfoPageVC {
         toolbar.setItems([leftButton, flexibleSpace, pageControl, flexibleSpace, rightButton], animated: true)
     }
     
-    func setAddTarget() {
+    private func setAddTarget() {
         listButton.addTarget(self, action: #selector(listButtonPressed(_:)), for: .touchUpInside)
         pageControl.addTarget(self, action: #selector(pageControlTapped(_:)), for: .valueChanged)
     }
@@ -137,6 +129,7 @@ extension WeatherDetailedInfoPageVC {
 }
 
 extension WeatherDetailedInfoPageVC: UIPageViewControllerDataSource {
+    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let currentIndex = pages.firstIndex(of: viewController) else { return nil }
         
@@ -150,9 +143,11 @@ extension WeatherDetailedInfoPageVC: UIPageViewControllerDataSource {
         guard currentIndex < (pages.count - 1) else { return nil }
         return pages[currentIndex + 1]
     }
+    
 }
 
 extension WeatherDetailedInfoPageVC: UIPageViewControllerDelegate {
+    
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         guard completed else { return }
         if let currentViewController = viewControllers?.first,
@@ -160,5 +155,5 @@ extension WeatherDetailedInfoPageVC: UIPageViewControllerDelegate {
             pageControl.currentPage = currentIndex
         }
     }
+    
 }
-
