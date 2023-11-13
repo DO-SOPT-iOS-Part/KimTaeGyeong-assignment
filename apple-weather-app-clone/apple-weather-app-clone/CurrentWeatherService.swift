@@ -12,9 +12,9 @@ class CurrentWeatherService {
     static let shared = CurrentWeatherService()
     init() {}
     
-    func makeRequest(cityName: String) -> URLRequest {
+    func makeRequest(location: String) -> URLRequest {
         let apiKey = Bundle.main.object(forInfoDictionaryKey: "API_KEY") as? String
-        let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?q=\(cityName)&appid=\(apiKey!)")!
+        let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?q=\(location)&appid=\(apiKey!)")!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         let header = ["Content-Type": "application/json"]
@@ -24,9 +24,9 @@ class CurrentWeatherService {
         return request
     }
     
-    func GetCurrentWeatherData(cityName: String) async throws -> CurrentWeatherDataModel {
+    func GetCurrentWeatherData(location: String) async throws -> CurrentWeatherDataModel {
         do {
-            let request = self.makeRequest(cityName: cityName)
+            let request = self.makeRequest(location: location)
             let (data, response) = try await URLSession.shared.data(for: request)
             dump(request)
             guard let httpResponse = response as? HTTPURLResponse else {
