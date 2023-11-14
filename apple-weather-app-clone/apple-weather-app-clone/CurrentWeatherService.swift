@@ -10,7 +10,7 @@ import Foundation
 class CurrentWeatherService {
     
     static let shared = CurrentWeatherService()
-    init() {}
+    private init() {}
     
     func makeRequest(location: String) -> URLRequest {
         let apiKey = Bundle.main.object(forInfoDictionaryKey: "API_KEY") as? String
