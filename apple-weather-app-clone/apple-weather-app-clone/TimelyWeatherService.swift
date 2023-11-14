@@ -1,20 +1,20 @@
 //
-//  CurrentWeatherService.swift
+//  TimelyWeatherService.swift
 //  apple-weather-app-clone
 //
-//  Created by 티모시 킴 on 11/13/23.
+//  Created by 티모시 킴 on 11/14/23.
 //
 
 import Foundation
 
-class CurrentWeatherService {
+class TimelyWeatherService {
     
-    static let shared = CurrentWeatherService()
+    static let shared = TimelyWeatherService()
     private init() {}
     
-    func makeRequest(cityName: String) -> URLRequest {
+    func makeRequest(location: String) -> URLRequest {
         let apiKey = Bundle.main.object(forInfoDictionaryKey: "API_KEY") as? String
-        let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?q=\(cityName)&appid=\(apiKey!)")!
+        let url = URL(string: "https://api.openweathermap.org/data/2.5/forecast?q=\(location)&appid=\(apiKey!)")!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         let header = ["Content-Type": "application/json"]
@@ -24,16 +24,16 @@ class CurrentWeatherService {
         return request
     }
     
-    func GetCurrentWeatherData(cityName: String) async throws -> CurrentWeatherDataModel {
+    func GetTimelyWeatherData(location: String) async throws -> TimelyWeatherDataModel {
         do {
-            let request = self.makeRequest(cityName: cityName)
+            let request = self.makeRequest(location: location)
             let (data, response) = try await URLSession.shared.data(for: request)
             dump(request)
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw NetworkError.responseError
             }
             dump(response)
-            guard let parseData = parseCurrentWeatherData(data: data)
+            guard let parseData = parseTimelyWeatherData(data: data)
             else {
                 throw NetworkError.responseDecodingError
             }
@@ -45,10 +45,10 @@ class CurrentWeatherService {
     }
     
     
-    private func parseCurrentWeatherData(data: Data) -> CurrentWeatherDataModel? {
+    private func parseTimelyWeatherData(data: Data) -> TimelyWeatherDataModel? {
         do {
             let jsonDecoder = JSONDecoder()
-            let result = try jsonDecoder.decode(CurrentWeatherDataModel.self, from: data)
+            let result = try jsonDecoder.decode(TimelyWeatherDataModel.self, from: data)
             return result
         } catch {
             print(error)

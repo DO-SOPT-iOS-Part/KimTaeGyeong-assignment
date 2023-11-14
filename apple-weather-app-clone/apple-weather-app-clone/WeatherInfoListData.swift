@@ -8,6 +8,7 @@
 import Foundation
 
 struct WeatherInfoListData: Equatable {
+    let cityName: String
     let location: String
     let time: String
     let weather: String
@@ -15,7 +16,8 @@ struct WeatherInfoListData: Equatable {
     let maxTemperature: Int
     let minTemperature: Int
     
-    init(location: String, timezone: Int, weather: String, temperature: Double, maxTemperature: Double, minTemperature: Double) {
+    init(cityName: String, location: String, timezone: Int, weather: String, temperature: Double, maxTemperature: Double, minTemperature: Double) {
+        self.cityName = cityName
         self.location = location
         self.time = convertTime(timezone: timezone)
         self.weather = weather

@@ -83,18 +83,24 @@ extension TimelyWeatherCollectionViewCell {
     
     private func setWeatherImage(weather: String) {
         switch weather {
-        case "흐림":
-            weatherImageView.image = UIImage(named: "cloudy_image")
-        case "폭우":
-            weatherImageView.image = UIImage(named: "heavy_rain_image")
-        case "다소 흐림":
-            weatherImageView.image = UIImage(named: "party_cloudy_image")
-        case "비":
-            weatherImageView.image = UIImage(named: "rain_image")
-        case "번개":
-            weatherImageView.image = UIImage(named: "thunderstorms_image")
+        case "Thunderstorm":
+            weatherImageView.image = UIImage(systemName: "cloud.bolt.rain.fill")?.withRenderingMode(.alwaysOriginal)
+        case "Drizzle":
+            weatherImageView.image = UIImage(systemName: "cloud.drizzle.fill")?.withRenderingMode(.alwaysOriginal)
+        case "Rain":
+            weatherImageView.image = UIImage(systemName: "cloud.rain.fill")?.withRenderingMode(.alwaysOriginal)
+        case "Snow":
+            weatherImageView.image = UIImage(systemName: "cloud.snow.fill")?.withRenderingMode(.alwaysOriginal)
+        case "Atmosphere":
+            weatherImageView.image = UIImage(systemName: "smoke.fill")?.withRenderingMode(.alwaysOriginal)
+        case "Clear":
+            weatherImageView.image = UIImage(systemName: "sun.max.fill")?.withRenderingMode(.alwaysOriginal)
+        case "Clouds":
+            weatherImageView.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
+        case "Additional":
+            weatherImageView.image = UIImage(systemName: "hurricane")?.withRenderingMode(.alwaysOriginal)
         default:
-            weatherImageView.image = UIImage(named: "cloudy_image")
+            weatherImageView.image = UIImage(systemName: "sun.max.fill")?.withRenderingMode(.alwaysOriginal)
         }
     }
     

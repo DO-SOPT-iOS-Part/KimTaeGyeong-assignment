@@ -19,6 +19,7 @@ class WeatherDetailedInfoVC: UIViewController {
     private let weatherBriefingView = WeatherBriefingView()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let tableView = UITableView(frame: .zero, style: .plain)
+    var timelyWeatherListData: [TimelyWeatherListData] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -148,9 +149,24 @@ extension WeatherDetailedInfoVC {
         self.tableView.dataSource = self
     }
     
-    func bindData(data: WeatherInfoListData) {
+    func bindData(data: WeatherInfoListData) async {
         weatherDetailedInfoView.bindData(data: data)
+        await fetchTimelyWeatherInfo(cityName: data.cityName)
     }
+    
+    func fetchTimelyWeatherInfo(cityName: String) async {
+        do {
+            let timelyWeather = try await TimelyWeatherService.shared.GetTimelyWeatherData(location: cityName)
+            for i in timelyWeather.list {
+                let timelyWeatherInfo = TimelyWeatherListData(date: i.dtTxt, weather: i.weather[0].id, temperature: i.main.temp)
+                timelyWeatherListData.append(timelyWeatherInfo)
+            }
+        } catch {
+            print(error)
+        }
+        collectionView.reloadData()
+    }
+
     
 }
 
