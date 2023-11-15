@@ -63,6 +63,7 @@ extension ViewController {
         tableView.do {
             $0.backgroundColor = .black
             $0.separatorStyle = .none
+            $0.showsVerticalScrollIndicator = false
         }
     }
     
