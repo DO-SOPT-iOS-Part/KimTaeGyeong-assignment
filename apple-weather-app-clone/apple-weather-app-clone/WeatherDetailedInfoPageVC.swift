@@ -48,7 +48,6 @@ extension WeatherDetailedInfoPageVC {
             Task {
                 await weatherDetailedInfoVC.bindData(data: weatherInfoListData[i])
             }
-//            weatherDetailedInfoVC.fetchTimelyWeatherInfo(cityName: weatherInfoListData[i].cityName)
             pages.append(weatherDetailedInfoVC)
         }
         self.pageControl.numberOfPages = weatherInfoListData.count

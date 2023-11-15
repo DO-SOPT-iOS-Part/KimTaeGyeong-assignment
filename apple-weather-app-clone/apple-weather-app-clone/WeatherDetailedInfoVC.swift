@@ -49,10 +49,6 @@ extension WeatherDetailedInfoVC {
             $0.layer.cornerRadius = 20
         }
         
-        weatherBriefingView.do {
-            $0.bindData(text: "08:00~09:00에 강우 상태가, 18:00에 한때 흐린 상태가 예상됩니다.")
-        }
-        
         collectionView.do {
             $0.showsHorizontalScrollIndicator = false
             $0.backgroundColor = .clear
@@ -151,6 +147,7 @@ extension WeatherDetailedInfoVC {
     
     func bindData(data: WeatherInfoListData) async {
         weatherDetailedInfoView.bindData(data: data)
+        weatherBriefingView.bindData(time: data.time)
         await fetchTimelyWeatherInfo(cityName: data.cityName)
     }
     
@@ -166,7 +163,22 @@ extension WeatherDetailedInfoVC {
         }
         collectionView.reloadData()
     }
-
+    
+    func addTime(_ inputTime: String) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        
+        if let date = dateFormatter.date(from: inputTime) {
+            let addDate = Calendar.current.date(byAdding: .hour, value: 1, to: date)
+            let addTime = Calendar.current.date(byAdding: .minute, value: -Calendar.current.component(.minute, from: date), to: addDate ?? Date())
+            
+            if let addTime = addTime {
+                return dateFormatter.string(from: addTime)
+            }
+        }
+        
+        return nil
+    }
     
 }
 
