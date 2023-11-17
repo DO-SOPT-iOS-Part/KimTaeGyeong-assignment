@@ -154,8 +154,8 @@ extension WeatherDetailedInfoVC {
     func fetchTimelyWeatherInfo(cityName: String) async {
         do {
             let timelyWeather = try await TimelyWeatherService.shared.GetTimelyWeatherData(location: cityName)
-            for i in timelyWeather.list {
-                let timelyWeatherInfo = TimelyWeatherListData(date: i.dtTxt, weather: i.weather[0].id, temperature: i.main.temp)
+            for i in 0 ... 9 {
+                let timelyWeatherInfo = TimelyWeatherListData(date: timelyWeather.list[i].dtTxt, weather: timelyWeather.list[i].weather[0].id, temperature: timelyWeather.list[i].main.temp)
                 timelyWeatherListData.append(timelyWeatherInfo)
             }
         } catch {
