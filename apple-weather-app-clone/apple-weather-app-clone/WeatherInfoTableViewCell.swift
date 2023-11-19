@@ -15,12 +15,12 @@ class WeatherInfoTableViewCell: UITableViewCell {
     static let identifier: String = "WeatherInfoTableViewCell"
     
     private let backgroundImageView = UIImageView(image: UIImage(named: "background_image2"))
-    private let myLocationLabel = UILabel()
     private let locationLabel = UILabel()
+    private let timeLabel = UILabel()
     private let weatherLabel = UILabel()
     private let temperatureLabel = UILabel()
-    private let maxtemperatureLabel = UILabel()
-    private let mintemperatureLabel = UILabel()
+    private let maxTemperatureLabel = UILabel()
+    private let minTemperatureLabel = UILabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -50,13 +50,12 @@ extension WeatherInfoTableViewCell {
             $0.contentMode = .scaleAspectFill
         }
         
-        myLocationLabel.do {
-            $0.text = "나의 위치"
+        locationLabel.do {
             $0.textColor = .white
             $0.font = UIFont(name: "SFProDisplay-Bold", size: 25)
         }
         
-        locationLabel.do {
+        timeLabel.do {
             $0.textColor = .white
             $0.font = UIFont(name: "SFProDisplay-Medium", size: 16)
         }
@@ -71,19 +70,19 @@ extension WeatherInfoTableViewCell {
             $0.font = UIFont(name: "SFProDisplay-Light", size: 50)
         }
         
-        maxtemperatureLabel.do {
+        maxTemperatureLabel.do {
             $0.textColor = .white
             $0.font = UIFont(name: "SFProDisplay-Medium", size: 15)
         }
         
-        mintemperatureLabel.do {
+        minTemperatureLabel.do {
             $0.textColor = .white
             $0.font = UIFont(name: "SFProDisplay-Medium", size: 15)
         }
     }
     
     private func setLayout() {
-        [backgroundImageView, myLocationLabel, locationLabel, weatherLabel, temperatureLabel, maxtemperatureLabel, mintemperatureLabel].forEach {
+        [backgroundImageView, locationLabel, timeLabel, weatherLabel, temperatureLabel, maxTemperatureLabel, minTemperatureLabel].forEach {
             contentView.addSubview($0)
         }
         
@@ -91,43 +90,44 @@ extension WeatherInfoTableViewCell {
             $0.edges.equalTo(contentView)
         }
         
-        myLocationLabel.snp.makeConstraints {
+        locationLabel.snp.makeConstraints {
             $0.top.equalTo(contentView).inset(7)
             $0.leading.equalTo(contentView).inset(15)
         }
         
-        locationLabel.snp.makeConstraints {
-            $0.top.equalTo(myLocationLabel.snp.bottom)
-            $0.leading.equalTo(myLocationLabel.snp.leading)
+        timeLabel.snp.makeConstraints {
+            $0.top.equalTo(locationLabel.snp.bottom)
+            $0.leading.equalTo(locationLabel.snp.leading)
         }
         
         weatherLabel.snp.makeConstraints {
             $0.bottom.equalTo(contentView).inset(7)
-            $0.leading.equalTo(myLocationLabel)
+            $0.leading.equalTo(locationLabel)
         }
         
         temperatureLabel.snp.makeConstraints {
-            $0.top.equalTo(myLocationLabel)
+            $0.top.equalTo(locationLabel)
             $0.trailing.equalTo(contentView).inset(15)
         }
         
-        mintemperatureLabel.snp.makeConstraints {
+        minTemperatureLabel.snp.makeConstraints {
             $0.bottom.equalTo(weatherLabel)
             $0.trailing.equalTo(temperatureLabel)
         }
         
-        maxtemperatureLabel.snp.makeConstraints {
+        maxTemperatureLabel.snp.makeConstraints {
             $0.bottom.equalTo(weatherLabel)
-            $0.trailing.equalTo(mintemperatureLabel.snp.leading).offset(-5)
+            $0.trailing.equalTo(minTemperatureLabel.snp.leading).offset(-5)
         }
     }
     
     func bindData(data: WeatherInfoListData) {
         self.locationLabel.text = data.location
+        self.timeLabel.text = data.time
         self.weatherLabel.text = data.weather
         self.temperatureLabel.text = "\(data.temperature)°"
-        self.maxtemperatureLabel.text = "최고:\(data.maxTemperature)°"
-        self.mintemperatureLabel.text = "최저:\(data.minTemperature)°"
+        self.maxTemperatureLabel.text = "최고:\(data.maxTemperature)°"
+        self.minTemperatureLabel.text = "최저:\(data.minTemperature)°"
     }
     
 }

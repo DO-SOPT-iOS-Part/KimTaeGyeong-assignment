@@ -23,6 +23,9 @@ class ViewController: UIViewController {
         self.setNavigation()
         self.setUI()
         self.setSearchController()
+        Task {
+            await fetchWeatherInfo()
+        }
         self.setTableViewConfig()
     }
     
@@ -60,6 +63,7 @@ extension ViewController {
         tableView.do {
             $0.backgroundColor = .black
             $0.separatorStyle = .none
+            $0.showsVerticalScrollIndicator = false
         }
     }
     
@@ -94,6 +98,22 @@ extension ViewController {
                                 forCellReuseIdentifier: WeatherInfoTableViewCell.identifier)
         self.tableView.delegate = self
         self.tableView.dataSource = self
+    }
+    
+    private func fetchWeatherInfo() async {
+        let cities = ["seoul", "daegu", "ulsan", "chuncheon", "jeju"]
+        
+        for city in cities {
+            do {
+                let currentWeather = try await CurrentWeatherService.shared.GetCurrentWeatherData(cityName: city)
+                let weatherInfo = WeatherInfoListData(cityName: city, location: currentWeather.name, timezone: currentWeather.timezone, weather: currentWeather.weather[0].main, temperature: currentWeather.main.temp, maxTemperature: currentWeather.main.tempMax, minTemperature: currentWeather.main.tempMin)
+                weatherInfoListData.append(weatherInfo)
+                searchWeatherInfoListData = weatherInfoListData
+            } catch {
+                print(error)
+            }
+        }
+        tableView.reloadData()
     }
     
 }

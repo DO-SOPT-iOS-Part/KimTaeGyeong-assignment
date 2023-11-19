@@ -45,7 +45,9 @@ extension WeatherDetailedInfoPageVC {
     private func setPage() {
         for i in 0..<weatherInfoListData.count {
             let weatherDetailedInfoVC = WeatherDetailedInfoVC()
-            weatherDetailedInfoVC.bindData(data: weatherInfoListData[i])
+            Task {
+                await weatherDetailedInfoVC.bindData(data: weatherInfoListData[i])
+            }
             pages.append(weatherDetailedInfoVC)
         }
         self.pageControl.numberOfPages = weatherInfoListData.count

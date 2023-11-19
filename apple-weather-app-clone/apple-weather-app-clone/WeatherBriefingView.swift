@@ -65,8 +65,35 @@ extension WeatherBriefingView {
         }
     }
     
-    func bindData(text: String) {
-        descriptionLabel.text = text
+    func bindData(time: String) {
+        let time1 = adjustTime1(time: time)!
+        let time2 = adjustTime2(time: time)!
+        descriptionLabel.text = "\(time1)~\(time2)에 강우 상태가, 18:00에 한때 흐린 상태가 예상됩니다."
+    }
+    
+    private func adjustTime1(time: String) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        if let date = dateFormatter.date(from: time) {
+            let adjustedTime = Calendar.current.date(byAdding: .minute, value: -Calendar.current.component(.minute, from: date), to: date)
+            if let adjustedTime = adjustedTime {
+                return dateFormatter.string(from: adjustedTime)
+            }
+        }
+        return nil
+    }
+    
+    private func adjustTime2(time: String) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        if let date = dateFormatter.date(from: time) {
+            let addedTime = Calendar.current.date(byAdding: .hour, value: 1, to: date)
+            let adjustedTime = Calendar.current.date(byAdding: .minute, value: -Calendar.current.component(.minute, from: date), to: addedTime ?? Date())
+            if let adjustedTime = adjustedTime {
+                return dateFormatter.string(from: adjustedTime)
+            }
+        }
+        return nil
     }
     
 }

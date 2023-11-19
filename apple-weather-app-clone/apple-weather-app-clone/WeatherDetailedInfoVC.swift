@@ -19,6 +19,7 @@ class WeatherDetailedInfoVC: UIViewController {
     private let weatherBriefingView = WeatherBriefingView()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let tableView = UITableView(frame: .zero, style: .plain)
+    var timelyWeatherListData: [TimelyWeatherListData] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,10 +47,6 @@ extension WeatherDetailedInfoVC {
         descriptionView.do {
             $0.backgroundColor = UIColor.black.withAlphaComponent(0.2)
             $0.layer.cornerRadius = 20
-        }
-        
-        weatherBriefingView.do {
-            $0.bindData(text: "08:00~09:00에 강우 상태가, 18:00에 한때 흐린 상태가 예상됩니다.")
         }
         
         collectionView.do {
@@ -148,8 +145,39 @@ extension WeatherDetailedInfoVC {
         self.tableView.dataSource = self
     }
     
-    func bindData(data: WeatherInfoListData) {
+    func bindData(data: WeatherInfoListData) async {
         weatherDetailedInfoView.bindData(data: data)
+        weatherBriefingView.bindData(time: data.time)
+        await fetchTimelyWeatherInfo(cityName: data.cityName)
+    }
+    
+    func fetchTimelyWeatherInfo(cityName: String) async {
+        do {
+            let timelyWeather = try await TimelyWeatherService.shared.GetTimelyWeatherData(location: cityName)
+            for i in 0 ... 9 {
+                let timelyWeatherInfo = TimelyWeatherListData(date: timelyWeather.list[i].dtTxt, weather: timelyWeather.list[i].weather[0].id, temperature: timelyWeather.list[i].main.temp)
+                timelyWeatherListData.append(timelyWeatherInfo)
+            }
+        } catch {
+            print(error)
+        }
+        collectionView.reloadData()
+    }
+    
+    func addTime(_ inputTime: String) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        
+        if let date = dateFormatter.date(from: inputTime) {
+            let addDate = Calendar.current.date(byAdding: .hour, value: 1, to: date)
+            let addTime = Calendar.current.date(byAdding: .minute, value: -Calendar.current.component(.minute, from: date), to: addDate ?? Date())
+            
+            if let addTime = addTime {
+                return dateFormatter.string(from: addTime)
+            }
+        }
+        
+        return nil
     }
     
 }
